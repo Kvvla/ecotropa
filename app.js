@@ -27,7 +27,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Пароль редактора
-const ADMIN_PASSWORD = "secretpassword"; // Поменяйте пароль здесь
+const ADMIN_PASSWORD = "qwerty7"; // Поменяйте пароль здесь
 let isAdminLoggedIn = false;
 let myMap;
 
