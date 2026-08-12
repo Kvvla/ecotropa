@@ -50,6 +50,7 @@ async function loadData() {
 
     try {
         // Загрузка троп
+        // Загрузка троп
         const trailsSnapshot = await getDocs(collection(db, "trails"));
         trailsSnapshot.forEach(docSnap => {
             const trail = docSnap.data();
@@ -61,15 +62,17 @@ async function loadData() {
             }
             trailBalloonContent += `</div>`;
 
+            // Преобразуем массив объектов {lat, lon} обратно в формат [[lat, lon]] для Яндекс Карт
+            const mapCoordinates = trail.coordinates.map(pt => [pt.lat, pt.lon]);
+
             const myPolyline = new ymaps.Polyline(
-                trail.coordinates,
+                mapCoordinates,
                 { hintContent: trail.title, balloonContent: trailBalloonContent },
                 { strokeColor: trail.color || "#1E88E5", strokeWidth: 5, strokeOpacity: 0.8 }
             );
 
             myMap.geoObjects.add(myPolyline);
 
-            // Обработка клика по кнопке удаления внутри балуна
             myMap.geoObjects.events.add('click', () => {
                 setTimeout(() => {
                     const btn = document.getElementById(`del-trail-${id}`);
@@ -77,7 +80,6 @@ async function loadData() {
                 }, 100);
             });
         });
-
         // Загрузка растений
         const plantsSnapshot = await getDocs(collection(db, "plants"));
         plantsSnapshot.forEach(docSnap => {
@@ -168,7 +170,6 @@ async function addTrail(e) {
     const rawCoords = document.getElementById('tCoords').value;
 
     try {
-        // Регулярное выражение находит любые пары чисел формата 56.123, 37.123
         const regex = /([0-9]+\.[0-9]+)\s*,\s*([0-9]+\.[0-9]+)/g;
         const coordinates = [];
         let match;
@@ -176,7 +177,9 @@ async function addTrail(e) {
         while ((match = regex.exec(rawCoords)) !== null) {
             const lat = parseFloat(match[1]);
             const lon = parseFloat(match[2]);
-            coordinates.push([lat, lon]);
+
+            // ВАЖНО: сохраняем как объекты {lat, lon}, так как Firestore не поддерживает вложенные массивы [[lat, lon]]
+            coordinates.push({ lat, lon });
         }
 
         if (coordinates.length < 2) {
