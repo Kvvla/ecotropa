@@ -5,13 +5,23 @@ import {
 
 // 1. ВСТАВЬТЕ СВАИ ДАННЫЕ ИЗ FIREBASE КОНСОЛИ
 const firebaseConfig = {
-  apiKey: "ВАШ_FIREBASE_API_KEY",
-  authDomain: "ваш-проект.firebaseapp.com",
-  projectId: "ваш-проект",
-  storageBucket: "ваш-проект.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+
+  apiKey: "AIzaSyCR1KKJIk0CRAZBWVZxA-juGZH79lBbH_E",
+
+  authDomain: "ecotrail-project.firebaseapp.com",
+
+  projectId: "ecotrail-project",
+
+  storageBucket: "ecotrail-project.firebasestorage.app",
+
+  messagingSenderId: "401282939426",
+
+  appId: "1:401282939426:web:d907649e9d4206791c287b",
+
+  measurementId: "G-E9HFETLRXG"
+
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
