@@ -160,6 +160,7 @@ async function addPlant(e) {
 }
 
 // Добавление тропы в Firebase
+// Надежное добавление тропы в Firebase
 async function addTrail(e) {
     e.preventDefault();
     const title = document.getElementById('tTitle').value;
@@ -167,17 +168,33 @@ async function addTrail(e) {
     const rawCoords = document.getElementById('tCoords').value;
 
     try {
-        const coordinates = rawCoords.split(';').map(pt => {
-            const [lat, lon] = pt.split(',').map(n => parseFloat(n.trim()));
-            return [lat, lon];
-        });
+        // Парсим координаты: разбиваем по semicolons, переходам строк и очищаем от пробелов
+        const coordinates = rawCoords
+            .split(';')
+            .map(pair => pair.trim())
+            .filter(pair => pair.length > 0) // Игнорируем пустые элементы
+            .map(pair => {
+                const parts = pair.split(',');
+                if (parts.length !== 2) throw new Error("Неверная пара координат");
+
+                const lat = parseFloat(parts[0].trim());
+                const lon = parseFloat(parts[1].trim());
+
+                if (isNaN(lat) || isNaN(lon)) throw new Error("Координата не является числом");
+                return [lat, lon];
+            });
+
+        if (coordinates.length < 2) {
+            alert('Тропа должна состоять минимум из 2 точек!');
+            return;
+        }
 
         await addDoc(collection(db, "trails"), { title, color, coordinates });
-        alert('Тропа сохранена!');
+        alert('Тропа успешно сохранена!');
         document.getElementById('trailForm').reset();
         loadData();
     } catch (err) {
-        alert('Ошибка в формате координат!');
+        alert('Ошибка в формате координат! Проверьте, что точки разделены точкой с запятой (;), а широта и долгота — запятой (,).');
     }
 }
 
