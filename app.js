@@ -168,24 +168,19 @@ async function addTrail(e) {
     const rawCoords = document.getElementById('tCoords').value;
 
     try {
-        // Парсим координаты: разбиваем по semicolons, переходам строк и очищаем от пробелов
-        const coordinates = rawCoords
-            .split(';')
-            .map(pair => pair.trim())
-            .filter(pair => pair.length > 0) // Игнорируем пустые элементы
-            .map(pair => {
-                const parts = pair.split(',');
-                if (parts.length !== 2) throw new Error("Неверная пара координат");
+        // Регулярное выражение находит любые пары чисел формата 56.123, 37.123
+        const regex = /([0-9]+\.[0-9]+)\s*,\s*([0-9]+\.[0-9]+)/g;
+        const coordinates = [];
+        let match;
 
-                const lat = parseFloat(parts[0].trim());
-                const lon = parseFloat(parts[1].trim());
-
-                if (isNaN(lat) || isNaN(lon)) throw new Error("Координата не является числом");
-                return [lat, lon];
-            });
+        while ((match = regex.exec(rawCoords)) !== null) {
+            const lat = parseFloat(match[1]);
+            const lon = parseFloat(match[2]);
+            coordinates.push([lat, lon]);
+        }
 
         if (coordinates.length < 2) {
-            alert('Тропа должна состоять минимум из 2 точек!');
+            alert('Не удалось распознать координаты! Нужно минимум 2 точки.');
             return;
         }
 
@@ -194,7 +189,7 @@ async function addTrail(e) {
         document.getElementById('trailForm').reset();
         loadData();
     } catch (err) {
-        alert('Ошибка в формате координат! Проверьте, что точки разделены точкой с запятой (;), а широта и долгота — запятой (,).');
+        alert('Ошибка при сохранении тропы в базе данных!');
     }
 }
 
