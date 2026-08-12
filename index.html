@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экотропа</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Подключаем Яндекс Карты API v2.1 -->
+    <!-- ЗАМЕНИТЕ ВАШ_API_КЛЮЧ_ЯНДЕКС НА ВАШ КЛЮЧ -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ_ЯНДЕКС&lang=ru_RU" type="text/javascript"></script>
+
+    <!-- Подключаем Firebase SDK v9 (Модульный через CDN) -->
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+
+    <button class="admin-toggle" id="adminToggleBtn">Редактор</button>
+
+    <div class="admin-panel" id="adminPanel">
+        <div id="authBlock">
+            333Вход редактора</h3>
+            <input type="password" id="adminPass" placeholder="Введите пароль">
+            <button id="loginBtn">Войти</button>
+        </div>
+
+        <div id="editorBlock" style="display: none;">
+            <div class="tab-buttons">
+                <button class="active" id="btnTabPlant">+ Растение</button>
+                <button id="btnTabTrail">+ Тропа</button>
+            </div>
+
+            <!-- Форма добавления растения -->
+            <form id="plantForm">
+                <input type="text" id="pName" placeholder="Название растения" required>
+                <textarea id="pDesc" placeholder="Описание"></textarea>
+                <input type="text" id="pPhoto" placeholder="URL Фотографии (ссылка)">
+                <input type="number" step="any" id="pLat" placeholder="Широта (Lat): например 55.75" required>
+                <input type="number" step="any" id="pLon" placeholder="Долгота (Lon): например 37.61" required>
+                <button type="submit">Сохранить метку</button>
+            </form>
+
+            <!-- Форма добавления тропы -->
+            <form id="trailForm" style="display: none;">
+                <input type="text" id="tTitle" placeholder="Название тропы" required>
+                <label style="font-size: 12px; color: #666;">Цвет тропы:</label>
+                <input type="color" id="tColor" value="#1E88E5" style="height: 40px; cursor: pointer;">
+                <textarea id="tCoords" placeholder="Координаты через точку с запятой:&#10;55.75, 37.61;&#10;55.76, 37.62" rows="5" required></textarea>
+                <button type="submit">Сохранить тропу</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+</body>
+</html>
