@@ -189,7 +189,8 @@ async function addTrail(e) {
         document.getElementById('trailForm').reset();
         loadData();
     } catch (err) {
-        alert('Ошибка при сохранении тропы в базе данных!');
+        console.error("Детали ошибки Firebase:", err);
+        alert('Ошибка базы данных: ' + err.message);
     }
 }
 
