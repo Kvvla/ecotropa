@@ -39,28 +39,37 @@ function initMap() {
     myMap = new ymaps.Map("map", {
         center: [55.7558, 37.6176],
         zoom: 12,
-        type: 'yandex#hybrid', // Открытие карты в формате "Гибрид"
+        type: 'yandex#hybrid',
         controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'geolocationControl']
     });
 
-    // 1. Определение геолокации пользователя
+    // Определение геолокации (гибридный поиск: GPS -> Wi-Fi -> IP)
     ymaps.geolocation.get({
-        provider: 'browser',
-        mapStateAutoApply: true // Автоматически смещает карту к пользователю
+        mapStateAutoApply: true
     }).then(function (result) {
+        // Извлекаем координаты пользователя
+        const userCoords = result.geoObjects.get(0).geometry.getCoordinates();
+
+        // Кастомизируем синий кружок
         result.geoObjects.options.set('preset', 'islands#blueCircleDotIconWithCaption');
         result.geoObjects.get(0).properties.set({
             balloonContentBody: 'Вы находитесь здесь'
         });
+
+        // Добавляем геообъект на карту
         myMap.geoObjects.add(result.geoObjects);
-    }).catch(function () {
-        console.log("Пользователь запретил доступ к геолокации или она недоступна.");
+
+        // Принудительно плавно перемещаем камеру и приближаем до уровня 15
+        myMap.setCenter(userCoords, 15, { checkZoomRange: true, duration: 800 });
+
+    }).catch(function (err) {
+        console.warn("Не удалось определить геолокацию:", err);
     });
 
-    // 2. Отслеживание координат курсора для редактора
+    // Отслеживание координат курсора для редактора
     myMap.events.add('mousemove', function (e) {
         if (isAdminLoggedIn) {
-            const coords = e.get('coords'); // Массив [lat, lon]
+            const coords = e.get('coords');
             const lat = coords[0].toFixed(6);
             const lon = coords[1].toFixed(6);
 
@@ -73,7 +82,6 @@ function initMap() {
 
     loadData();
 }
-
 // Показ плашки координат при входе редактора
 document.getElementById('loginBtn').onclick = () => {
     const pass = document.getElementById('adminPass').value;
