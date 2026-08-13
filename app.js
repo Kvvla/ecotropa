@@ -34,15 +34,62 @@ let myMap;
 // Инициализация Яндекс Карты
 ymaps.ready(initMap);
 
+// Инициализация карты
 function initMap() {
     myMap = new ymaps.Map("map", {
         center: [55.7558, 37.6176],
         zoom: 12,
-        controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
+        type: 'yandex#hybrid', // Открытие карты в формате "Гибрид"
+        controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'geolocationControl']
+    });
+
+    // 1. Определение геолокации пользователя
+    ymaps.geolocation.get({
+        provider: 'browser',
+        mapStateAutoApply: true // Автоматически смещает карту к пользователю
+    }).then(function (result) {
+        result.geoObjects.options.set('preset', 'islands#blueCircleDotIconWithCaption');
+        result.geoObjects.get(0).properties.set({
+            balloonContentBody: 'Вы находитесь здесь'
+        });
+        myMap.geoObjects.add(result.geoObjects);
+    }).catch(function () {
+        console.log("Пользователь запретил доступ к геолокации или она недоступна.");
+    });
+
+    // 2. Отслеживание координат курсора для редактора
+    myMap.events.add('mousemove', function (e) {
+        if (isAdminLoggedIn) {
+            const coords = e.get('coords'); // Массив [lat, lon]
+            const lat = coords[0].toFixed(6);
+            const lon = coords[1].toFixed(6);
+
+            const coordsElem = document.getElementById('currentCoords');
+            if (coordsElem) {
+                coordsElem.innerText = `${lat}, ${lon}`;
+            }
+        }
     });
 
     loadData();
 }
+
+// Показ плашки координат при входе редактора
+document.getElementById('loginBtn').onclick = () => {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === ADMIN_PASSWORD) {
+        isAdminLoggedIn = true;
+        document.getElementById('authBlock').style.display = 'none';
+        document.getElementById('editorBlock').style.display = 'block';
+
+        // Показываем виджет координат под курсором
+        document.getElementById('coordsBox').style.display = 'block';
+
+        loadData();
+    } else {
+        alert('Неверный пароль!');
+    }
+};
 
 // Загрузка троп и меток из Firebase Firestore
 async function loadData() {

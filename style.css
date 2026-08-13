@@ -101,3 +101,17 @@ body, html {
     font-weight: bold;
     margin-top: 8px;
 }
+.coords-box {
+    position: absolute;
+    bottom: 25px;
+    left: 15px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 13px;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
